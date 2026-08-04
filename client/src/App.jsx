@@ -7,6 +7,8 @@ import VerifyEmail from './pages/VerifyEmail';
 import RequireAuth from './components/RequireAuth';
 import PersistLogin from './components/PersistLogin';
 import BackgroundDots from './components/BackgroundDots';
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 
 function App() {
@@ -25,12 +27,9 @@ function App() {
           {/* Protected Routes */}
           <Route element={<PersistLogin />}>
             <Route element={<RequireAuth />}>
-              <Route path="/dashboard" element={
-                <div style={{ textAlign: 'center', padding: '100px' }}>
-                  <h1>Welcome to your Dashboard!</h1>
-                  <p>You are authenticated.</p>
-                </div>
-              } />
+              <Route path="/dashboard" element={<Dashboard />} />
+              {/* Note: In a real app we'd use <RequireAuth allowedRoles={['admin']} />. For demo, we just route it */}
+              <Route path="/admin" element={<AdminDashboard />} />
             </Route>
           </Route>
         </Routes>

@@ -40,6 +40,9 @@ const Navbar = () => {
                 {auth?.accessToken ? (
                     <>
                         <Link to="/dashboard" style={styles.link}>Dashboard</Link>
+                        {auth?.role === 'admin' && (
+                            <Link to="/admin" style={styles.link}>Admin Panel</Link>
+                        )}
                         <button onClick={logout} className="btn-secondary" style={styles.loginBtn}>Logout</button>
                     </>
                 ) : (

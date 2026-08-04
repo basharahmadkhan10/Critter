@@ -96,6 +96,7 @@ const login = async (req, res) => {
         res.json({
             _id: user._id,
             email: user.email,
+            role: user.role,
             accessToken,
         });
     } catch (error) {
@@ -133,7 +134,7 @@ const refresh = async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000,
         });
 
-        res.json({ accessToken: newAccessToken });
+        res.json({ accessToken: newAccessToken, role: user.role });
     } catch (error) {
         res.status(403).json({ message: 'Forbidden: Invalid refresh token' });
     }
@@ -163,6 +164,7 @@ const getMe = async (req, res) => {
     const user = {
         _id: req.user._id,
         email: req.user.email,
+        role: req.user.role,
     };
     res.json(user);
 };
