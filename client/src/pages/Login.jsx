@@ -12,9 +12,11 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errMsg, setErrMsg] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         try {
             const response = await axios.post('/auth/login', 
                 JSON.stringify({ email, password }),
@@ -39,6 +41,8 @@ const Login = () => {
             } else {
                 setErrMsg('Login Failed');
             }
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -81,7 +85,9 @@ const Login = () => {
                             />
                         </div>
                         
-                        <button type="submit" className="btn-primary" style={styles.btn}>Log In</button>
+                        <button type="submit" className="btn-primary" style={styles.btn} disabled={isLoading}>
+                            {isLoading ? 'Logging in...' : 'Log In'}
+                        </button>
                     </form>
                     
                     <div style={styles.footer}>

@@ -1,0 +1,24 @@
+{
+  "name": "final_assignment",
+  "version": "1.0.0",
+  "description": "**Project Scenario:** A complete DevOps CI/CD pipeline deploying a containerized MERN stack application onto Kubernetes using Jenkins, designed for ABC Solutions Pvt. Ltd.",
+  "main": "start_lt.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/basharahmadkhan10/Critter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/basharahmadkhan10/Critter/issues"
+  },
+  "homepage": "https://github.com/basharahmadkhan10/Critter#readme",
+  "dependencies": {
+    "localtunnel": "^2.0.2"
+  }
+}

@@ -12,55 +12,56 @@ const register = async (req, res) => {
         const userExists = await User.findOne({ email });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-        // Generate verification token
-        const verificationToken = crypto.randomBytes(32).toString('hex');
+        // Generate 6-digit verification OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         const user = await User.create({
             email,
             password,
-            verificationToken,
-            isVerified: true, // Auto-verify for the demo to prevent blocking
+            verificationToken: otp,
+            isVerified: false, 
         });
 
-        // Send verification email
-        const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}&email=${email}`;
-        
+        // Send OTP email
         try {
             await sendEmail({
                 email: user.email,
-                subject: 'Verify your Critter account email',
+                subject: 'Your Critter Account Verification OTP',
                 html: `
                     <h1>Welcome to Critter!</h1>
-                    <p>Please click the link below to verify your email address:</p>
-                    <a href="${verifyUrl}" style="background-color: #ef5b44; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
-                    <p>If you did not request this, please ignore this email.</p>
+                    <p>Your verification code is:</p>
+                    <h2 style="background-color: #ef5b44; color: white; display: inline-block; padding: 10px 20px; border-radius: 5px; letter-spacing: 2px;">${otp}</h2>
+                    <p>Please enter this code in the app to verify your account.</p>
                 `,
             });
         } catch (emailError) {
             console.error('Email sending failed, but user was created:', emailError.message);
-            // Don't crash the registration process!
         }
 
-        res.status(201).json({ message: 'Registration successful. You can now log in.' });
+        res.status(201).json({ message: 'Registration successful. Please verify your email.', email: user.email });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// @desc    Verify email
-// @route   GET /auth/verify-email
+// @desc    Verify email OTP
+// @route   POST /auth/verify-email
 const verifyEmail = async (req, res) => {
-    const { token, email } = req.query;
+    const { email, otp } = req.body;
     try {
-        const user = await User.findOne({ email, verificationToken: token });
-        if (!user) return res.status(400).json({ message: 'Invalid token or email' });
+        if (!email || !otp) {
+             return res.status(400).json({ message: 'Email and OTP are required' });
+        }
+
+        const user = await User.findOne({ email, verificationToken: otp });
+        if (!user) return res.status(400).json({ message: 'Invalid OTP or email' });
 
         user.isVerified = true;
         user.verificationToken = undefined;
         await user.save();
 
-        res.status(200).json({ message: 'Email verified successfully! You can now log in.' });
+        res.status(200).json({ message: 'Email verified successfully!' });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }

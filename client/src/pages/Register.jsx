@@ -1,29 +1,35 @@
 import { useState } from 'react';
 import axios from '../api/axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [otp, setOtp] = useState('');
+    
     const [msg, setMsg] = useState('');
     const [errMsg, setErrMsg] = useState('');
+    
+    const [isLoading, setIsLoading] = useState(false);
+    const [showOtp, setShowOtp] = useState(false);
+    
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
+        setErrMsg('');
+        setMsg('');
+        
         try {
             const response = await axios.post('/auth/register', 
                 JSON.stringify({ email, password }),
-                {
-                    headers: { 'Content-Type': 'application/json' }
-                }
+                { headers: { 'Content-Type': 'application/json' } }
             );
             
             setMsg(response.data.message);
-            setErrMsg('');
-            setEmail('');
-            setPassword('');
+            setShowOtp(true);
         } catch (err) {
-            setMsg('');
             if (!err?.response) {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 400) {
@@ -31,6 +37,37 @@ const Register = () => {
             } else {
                 setErrMsg('Registration Failed');
             }
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const handleVerifyOtp = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setErrMsg('');
+        setMsg('');
+        
+        try {
+            const response = await axios.post('/auth/verify-email', 
+                JSON.stringify({ email, otp }),
+                { headers: { 'Content-Type': 'application/json' } }
+            );
+            
+            setMsg(response.data.message);
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
+        } catch (err) {
+            if (!err?.response) {
+                setErrMsg('No Server Response');
+            } else if (err.response?.status === 400) {
+                setErrMsg(err.response.data.message || 'Invalid OTP');
+            } else {
+                setErrMsg('Verification Failed');
+            }
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -39,45 +76,79 @@ const Register = () => {
             <div style={styles.leftSide}>
                 <div style={styles.formContainer}>
                     <Link to="/" style={styles.logo}>critters.</Link>
-                    <h1 style={styles.title}>Start for free</h1>
-                    <p style={styles.subtitle}>Create your account to launch and grow your events.</p>
                     
-                    {msg && <p style={styles.success}>{msg}</p>}
-                    {errMsg && <p style={styles.error}>{errMsg}</p>}
-                    
-                    <form onSubmit={handleSubmit} style={styles.form}>
-                        <div style={styles.inputGroup}>
-                            <label htmlFor="email" style={styles.label}>Email Address</label>
-                            <input
-                                type="email"
-                                id="email"
-                                onChange={(e) => setEmail(e.target.value)}
-                                value={email}
-                                required
-                                style={styles.input}
-                                placeholder="name@example.com"
-                            />
-                        </div>
-                        
-                        <div style={styles.inputGroup}>
-                            <label htmlFor="password" style={styles.label}>Password</label>
-                            <input
-                                type="password"
-                                id="password"
-                                onChange={(e) => setPassword(e.target.value)}
-                                value={password}
-                                required
-                                style={styles.input}
-                                placeholder="Create a strong password"
-                            />
-                        </div>
-                        
-                        <button type="submit" className="btn-primary" style={styles.btn}>Create Account</button>
-                    </form>
-                    
-                    <div style={styles.footer}>
-                        Already have an account? <Link to="/login" className="btn-secondary">Log in here</Link>
-                    </div>
+                    {!showOtp ? (
+                        <>
+                            <h1 style={styles.title}>Start for free</h1>
+                            <p style={styles.subtitle}>Create your account to launch and grow your events.</p>
+                            
+                            {msg && <p style={styles.success}>{msg}</p>}
+                            {errMsg && <p style={styles.error}>{errMsg}</p>}
+                            
+                            <form onSubmit={handleSubmit} style={styles.form}>
+                                <div style={styles.inputGroup}>
+                                    <label htmlFor="email" style={styles.label}>Email Address</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        value={email}
+                                        required
+                                        style={styles.input}
+                                        placeholder="name@example.com"
+                                    />
+                                </div>
+                                
+                                <div style={styles.inputGroup}>
+                                    <label htmlFor="password" style={styles.label}>Password</label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        value={password}
+                                        required
+                                        style={styles.input}
+                                        placeholder="Create a strong password"
+                                    />
+                                </div>
+                                
+                                <button type="submit" className="btn-primary" style={styles.btn} disabled={isLoading}>
+                                    {isLoading ? 'Loading...' : 'Create Account'}
+                                </button>
+                            </form>
+                            
+                            <div style={styles.footer}>
+                                Already have an account? <Link to="/login" className="btn-secondary">Log in here</Link>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h1 style={styles.title}>Verify Email</h1>
+                            <p style={styles.subtitle}>We've sent a 6-digit OTP to <b>{email}</b></p>
+                            
+                            {msg && <p style={styles.success}>{msg}</p>}
+                            {errMsg && <p style={styles.error}>{errMsg}</p>}
+                            
+                            <form onSubmit={handleVerifyOtp} style={styles.form}>
+                                <div style={styles.inputGroup}>
+                                    <label htmlFor="otp" style={styles.label}>Enter OTP</label>
+                                    <input
+                                        type="text"
+                                        id="otp"
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        value={otp}
+                                        required
+                                        maxLength="6"
+                                        style={{...styles.input, textAlign: 'center', letterSpacing: '4px', fontSize: '20px'}}
+                                        placeholder="123456"
+                                    />
+                                </div>
+                                <button type="submit" className="btn-primary" style={styles.btn} disabled={isLoading}>
+                                    {isLoading ? 'Verifying...' : 'Verify OTP'}
+                                </button>
+                            </form>
+                        </>
+                    )}
                 </div>
             </div>
             
