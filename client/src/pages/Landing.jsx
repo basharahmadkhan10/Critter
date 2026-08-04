@@ -143,6 +143,7 @@ const Landing = () => {
                         <p style={styles.featureDesc}>Save hours of work with automated confirmations, emails, and reminders.</p>
                     </div>
                 </div>
+            </div>
             {/* Footer Section */}
             <footer id="footer" style={styles.footer}>
                 <div style={styles.footerContent}>
