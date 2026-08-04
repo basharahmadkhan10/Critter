@@ -73,7 +73,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                withKubeConfig([credentialsId: "${KUBECONFIG_CRED}"]) {
+                withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
                     // Update the image tags in the deployment files
                     sh "sed -i 's|image: bashar24k/eventportal-frontend:v1|image: ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}|g' k8s/frontend-deployment.yaml"
                     sh "sed -i 's|image: bashar24k/eventportal-backend:v1|image: ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}|g' k8s/backend-deployment.yaml"
@@ -86,7 +86,7 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                withKubeConfig([credentialsId: "${KUBECONFIG_CRED}"]) {
+                withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
                     sh "kubectl rollout status deployment/critter-frontend --timeout=60s"
                     sh "kubectl rollout status deployment/critter-backend --timeout=60s"
                 }
@@ -97,7 +97,7 @@ pipeline {
     post {
         failure {
             echo 'Deployment Failed. Initiating Rollback...'
-            withKubeConfig([credentialsId: "${KUBECONFIG_CRED}"]) {
+            withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
                 sh "kubectl rollout undo deployment/critter-frontend"
                 sh "kubectl rollout undo deployment/critter-backend"
             }
