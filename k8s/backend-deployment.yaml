@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: critter-backend
+  labels:
+    app: critter-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: critter-backend
+  template:
+    metadata:
+      labels:
+        app: critter-backend
+    spec:
+      containers:
+        - name: backend
+          image: bashar24k/eventportal-backend:v1 
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - secretRef:
+                name: critter-secrets
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+          # Innovation: Liveness and Readiness Probes for Zero-Downtime
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: critter-backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

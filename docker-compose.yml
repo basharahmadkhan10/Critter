@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend-service:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    environment:
+      - NODE_ENV=production
+    networks:
+      - critter-network
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-service
+    networks:
+      - critter-network
+
+networks:
+  critter-network:
+    driver: bridge
