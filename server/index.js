@@ -22,6 +22,7 @@ app.use(cookieParser());
 // Routes
 app.use('/auth', authRoutes);
 app.use('/events', require('./routes/eventRoutes'));
+app.use('/bookings', require('./routes/bookingRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Critter API is running...');

@@ -9,6 +9,7 @@ import PersistLogin from './components/PersistLogin';
 import BackgroundDots from './components/BackgroundDots';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import History from './pages/History';
 import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route element={<PersistLogin />}>
             <Route element={<RequireAuth />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/history" element={<History />} />
               {/* Note: In a real app we'd use <RequireAuth allowedRoles={['admin']} />. For demo, we just route it */}
               <Route path="/admin" element={<AdminDashboard />} />
             </Route>

@@ -1,17 +1,31 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { LuCalendar, LuMapPin } from 'react-icons/lu';
 
 const Dashboard = () => {
     const [events, setEvents] = useState([]);
+    const [bookedEvents, setBookedEvents] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
-        const fetchEvents = async () => {
+        const fetchEventsAndBookings = async () => {
             try {
                 const response = await axios.get('/events');
                 setEvents(response.data);
+                
+                // Try to fetch bookings if logged in (this requires axiosPrivate, might fail if not logged in, but that's okay for public dashboard)
+                try {
+                     const bookingsRes = await axiosPrivate.get('/bookings');
+                     const bookedIds = new Set(bookingsRes.data.map(b => b.event._id));
+                     setBookedEvents(bookedIds);
+                } catch (e) {
+                     // Not logged in or error, just ignore for booked state
+                }
+                
                 setLoading(false);
             } catch (err) {
                 console.error(err);
@@ -19,16 +33,38 @@ const Dashboard = () => {
                 setLoading(false);
             }
         };
-        fetchEvents();
-    }, []);
+        fetchEventsAndBookings();
+    }, [axiosPrivate]);
+
+    const showToast = (message, type) => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+    };
+
+    const handleBook = async (eventId) => {
+        try {
+            await axiosPrivate.post('/bookings', { eventId });
+            setBookedEvents(prev => new Set(prev).add(eventId));
+            showToast('Ticket booked successfully!', 'success');
+        } catch (err) {
+            console.error(err);
+            const msg = err.response?.data?.message || 'Failed to book ticket. Please login.';
+            showToast(msg, 'error');
+        }
+    };
 
     if (loading) return <div className="loading">Loading Events...</div>;
     if (error) return <div className="error">{error}</div>;
 
     return (
         <div className="dashboard-container">
+            {toast.show && (
+                <div className={`toast-notification ${toast.type}`}>
+                    {toast.message}
+                </div>
+            )}
             <div className="dashboard-header">
-                <h2>Upcoming Events</h2>
+                <h2>Awesome Upcoming Events</h2>
                 <p>Browse and discover amazing events near you.</p>
             </div>
 
@@ -38,9 +74,13 @@ const Dashboard = () => {
                         <p>No events available right now. Check back later!</p>
                     </div>
                 ) : (
-                    events.map((event) => (
+                    events.map((event) => {
+                        const isBooked = bookedEvents.has(event._id);
+                        return (
                         <div key={event._id} className="event-card">
-                            <img src={event.imageUrl} alt={event.title} className="event-image" />
+                            <div className="event-image-wrapper">
+                                <img src={event.imageUrl} alt={event.title} className="event-image" />
+                            </div>
                             <div className="event-content">
                                 <h3>{event.title}</h3>
                                 <p className="event-desc">{event.description}</p>
@@ -55,10 +95,16 @@ const Dashboard = () => {
                                         {event.location}
                                     </span>
                                 </div>
-                                <button className="book-btn">Book Ticket</button>
+                                <button 
+                                    className={`book-btn ${isBooked ? 'booked' : ''}`}
+                                    onClick={() => !isBooked && handleBook(event._id)}
+                                    disabled={isBooked}
+                                >
+                                    {isBooked ? 'Booked' : 'Book Ticket'}
+                                </button>
                             </div>
                         </div>
-                    ))
+                    )})
                 )}
             </div>
         </div>

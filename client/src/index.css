@@ -132,11 +132,56 @@ button {
   transform: translateY(-5px);
 }
 
+.event-image-wrapper {
+  padding: 16px;
+  background-color: var(--white);
+}
+
 .event-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
+
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+.toast-notification.success {
+  background-color: #4CAF50;
+}
+
+.toast-notification.error {
+  background-color: #F44336;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.book-btn.booked {
+  background-color: #4CAF50;
+  cursor: not-allowed;
+}
+
+.book-btn.booked:hover {
+  background-color: #45a049;
+  transform: none;
+  box-shadow: none;
+}
+
 
 .event-content {
   padding: 1.5rem;
