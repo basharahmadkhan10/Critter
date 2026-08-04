@@ -30,13 +30,15 @@ const History = () => {
         <div className="dashboard-container">
             <div className="dashboard-header">
                 <h2>My Booked Tickets</h2>
-                <p>View all the events you have booked.</p>
+                <p style={{ textAlign: 'center' }}>View all the events you have booked.</p>
             </div>
 
             <div className="events-grid">
                 {bookings.length === 0 ? (
-                    <div className="no-events">
-                        <p>You have not booked any events yet.</p>
+                    <div style={{ width: '100%', gridColumn: '1 / -1', display: 'flex', justifyContent: 'center' }}>
+                        <p style={{ textAlign: 'center', padding: '40px 0', color: '#666' }}>
+                            You have not booked any events yet.
+                        </p>
                     </div>
                 ) : (
                     bookings.map((booking) => {
