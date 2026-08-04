@@ -17,13 +17,11 @@ const Dashboard = () => {
                 const response = await axios.get('/events');
                 setEvents(response.data);
                 
-                // Try to fetch bookings if logged in (this requires axiosPrivate, might fail if not logged in, but that's okay for public dashboard)
                 try {
                      const bookingsRes = await axiosPrivate.get('/bookings');
                      const bookedIds = new Set(bookingsRes.data.map(b => b.event._id));
                      setBookedEvents(bookedIds);
                 } catch (e) {
-                     // Not logged in or error, just ignore for booked state
                 }
                 
                 setLoading(false);
