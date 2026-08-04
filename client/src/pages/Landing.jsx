@@ -143,7 +143,21 @@ const Landing = () => {
                         <p style={styles.featureDesc}>Save hours of work with automated confirmations, emails, and reminders.</p>
                     </div>
                 </div>
-            </div>
+            {/* Footer Section */}
+            <footer id="footer" style={styles.footer}>
+                <div style={styles.footerContent}>
+                    <div style={styles.footerLogo}>critters.</div>
+                    <p style={styles.footerText}>Ready to launch your next big event?</p>
+                    <div style={styles.contactInfo}>
+                        <h4>Contact Us</h4>
+                        <p>Phone: +1 (800) 123-4567</p>
+                        <p>Email: hello@critters.demo</p>
+                    </div>
+                </div>
+                <div style={styles.footerBottom}>
+                    &copy; 2026 Critters Inc. All rights reserved.
+                </div>
+            </footer>
         </div>
     );
 };
@@ -330,6 +344,42 @@ const styles = {
         fontSize: '16px',
         color: '#666',
         lineHeight: '1.6'
+    },
+    footer: {
+        backgroundColor: '#111',
+        color: '#fff',
+        padding: '60px 20px 20px',
+        marginTop: '80px',
+        textAlign: 'left'
+    },
+    footerContent: {
+        maxWidth: '1200px',
+        margin: '0 auto',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: '40px',
+        marginBottom: '40px'
+    },
+    footerLogo: {
+        fontSize: '28px',
+        fontWeight: 'bold',
+        color: 'var(--primary-color)'
+    },
+    footerText: {
+        color: '#999',
+        fontSize: '16px',
+        lineHeight: '1.5'
+    },
+    contactInfo: {
+        color: '#ccc',
+        fontSize: '15px'
+    },
+    footerBottom: {
+        borderTop: '1px solid #333',
+        paddingTop: '20px',
+        textAlign: 'center',
+        color: '#666',
+        fontSize: '14px'
     }
 };
 

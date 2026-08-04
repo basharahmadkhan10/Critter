@@ -31,8 +31,8 @@ const Navbar = () => {
             <div style={styles.left}>
                 <Link to="/" style={styles.logo}>critters.</Link>
                 <div style={styles.links}>
-                    <Link to="#features" style={styles.link}>Features</Link>
-                    <Link to="/" style={styles.link}>Contact us</Link>
+                    <a href="/#features" style={styles.link}>Features</a>
+                    <a href="/#footer" style={styles.link}>Contact us</a>
                 </div>
             </div>
             
