@@ -46,7 +46,7 @@ pipeline {
                         dir('client') {
                             sh "docker build -t ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID} ."
                             // Innovation 1: DevSecOps Vulnerability Scanning
-                            sh "trivy image --severity HIGH,CRITICAL --no-progress ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}"
+                            sh "trivy image --cache-dir /tmp/trivy-frontend --severity HIGH,CRITICAL --no-progress ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}"
                         }
                     }
                 }
@@ -54,7 +54,7 @@ pipeline {
                     steps {
                         dir('server') {
                             sh "docker build -t ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID} ."
-                            sh "trivy image --severity HIGH,CRITICAL --no-progress ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}"
+                            sh "trivy image --cache-dir /tmp/trivy-backend --severity HIGH,CRITICAL --no-progress ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}"
                         }
                     }
                 }
