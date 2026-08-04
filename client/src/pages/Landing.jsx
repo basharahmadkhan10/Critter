@@ -94,7 +94,7 @@ const Landing = () => {
                 
                 <div style={styles.phoneMockup} ref={phoneMockupRef}>
                     <div style={styles.phoneHeader}>
-                        <span style={styles.logo}>events.</span>
+                        <span style={styles.logo}>critters.</span>
                         <div style={styles.phoneIcons}>
                             <div style={styles.iconCircle}></div>
                             <div style={styles.iconCircle}></div>

@@ -29,7 +29,7 @@ const Navbar = () => {
     return (
         <nav ref={navRef} style={styles.navbar}>
             <div style={styles.left}>
-                <Link to="/" style={styles.logo}>events.</Link>
+                <Link to="/" style={styles.logo}>critters.</Link>
                 <div style={styles.links}>
                     <Link to="#features" style={styles.link}>Features</Link>
                     <Link to="/" style={styles.link}>Contact us</Link>

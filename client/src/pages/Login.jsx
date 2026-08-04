@@ -46,9 +46,11 @@ const Login = () => {
         <div style={styles.container}>
             <div style={styles.leftSide}>
                 <div style={styles.formContainer}>
-                    <Link to="/" style={styles.logo}>events.</Link>
-                    <h1 style={styles.title}>Welcome Back</h1>
-                    <p style={styles.subtitle}>Log in to manage your events and bookings.</p>
+                    <div style={styles.header}>
+                        <Link to="/" style={styles.logo}>critters.</Link>
+                        <h1 style={styles.title}>Welcome back</h1>
+                        <p style={styles.subtitle}>Please enter your details.</p>
+                    </div>
                     
                     {errMsg && <p style={styles.error}>{errMsg}</p>}
                     

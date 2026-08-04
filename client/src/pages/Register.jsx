@@ -38,7 +38,7 @@ const Register = () => {
         <div style={styles.container}>
             <div style={styles.leftSide}>
                 <div style={styles.formContainer}>
-                    <Link to="/" style={styles.logo}>events.</Link>
+                    <Link to="/" style={styles.logo}>critters.</Link>
                     <h1 style={styles.title}>Start for free</h1>
                     <p style={styles.subtitle}>Create your account to launch and grow your events.</p>
                     
