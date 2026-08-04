@@ -13,7 +13,7 @@ const sendEmail = async (options) => {
 
     // 2. Define the email options
     const mailOptions = {
-        from: 'Critter App <noreply@critter.local>',
+        from: 'Critter App <hello@demomailtrap.com>',
         to: options.email,
         subject: options.subject,
         html: options.html,
