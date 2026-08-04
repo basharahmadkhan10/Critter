@@ -19,23 +19,29 @@ const register = async (req, res) => {
             email,
             password,
             verificationToken,
+            isVerified: true, // Auto-verify for the demo to prevent blocking
         });
 
         // Send verification email
         const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}&email=${email}`;
         
-        await sendEmail({
-            email: user.email,
-            subject: 'Verify your Critter account email',
-            html: `
-                <h1>Welcome to Critter!</h1>
-                <p>Please click the link below to verify your email address:</p>
-                <a href="${verifyUrl}" style="background-color: #ef5b44; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
-                <p>If you did not request this, please ignore this email.</p>
-            `,
-        });
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Verify your Critter account email',
+                html: `
+                    <h1>Welcome to Critter!</h1>
+                    <p>Please click the link below to verify your email address:</p>
+                    <a href="${verifyUrl}" style="background-color: #ef5b44; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+                    <p>If you did not request this, please ignore this email.</p>
+                `,
+            });
+        } catch (emailError) {
+            console.error('Email sending failed, but user was created:', emailError.message);
+            // Don't crash the registration process!
+        }
 
-        res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
+        res.status(201).json({ message: 'Registration successful. You can now log in.' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
