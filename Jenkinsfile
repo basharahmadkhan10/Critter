@@ -63,33 +63,33 @@ pipeline {
 
         stage('Push Images to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CRED}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
-                    sh "docker push ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}"
-                    sh "docker push ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}"
-                }
+                echo 'Skipping Docker Push: dockerhub-credentials not configured in Jenkins.'
+                // withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CRED}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                //     sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                //     sh "docker push ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}"
+                //     sh "docker push ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}"
+                // }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
-                    // Update the image tags in the deployment files
-                    sh "sed -i 's|image: bashar24k/eventportal-frontend:v1|image: ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}|g' k8s/frontend-deployment.yaml"
-                    sh "sed -i 's|image: bashar24k/eventportal-backend:v1|image: ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}|g' k8s/backend-deployment.yaml"
-                    
-                    // Apply the configurations
-                    sh "kubectl apply -f k8s/"
-                }
+                echo 'Skipping K8s Deployment: k8s-kubeconfig credential not configured in Jenkins.'
+                // withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
+                //     sh "sed -i 's|image: bashar24k/eventportal-frontend:v1|image: ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}|g' k8s/frontend-deployment.yaml"
+                //     sh "sed -i 's|image: bashar24k/eventportal-backend:v1|image: ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}|g' k8s/backend-deployment.yaml"
+                //     sh "kubectl apply -f k8s/"
+                // }
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
-                    sh "kubectl rollout status deployment/critter-frontend --timeout=60s"
-                    sh "kubectl rollout status deployment/critter-backend --timeout=60s"
-                }
+                echo 'Skipping Deployment Verification'
+                // withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
+                //     sh "kubectl rollout status deployment/critter-frontend --timeout=60s"
+                //     sh "kubectl rollout status deployment/critter-backend --timeout=60s"
+                // }
             }
         }
     }
@@ -97,10 +97,10 @@ pipeline {
     post {
         failure {
             echo 'Deployment Failed. Initiating Rollback...'
-            withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
-                sh "kubectl rollout undo deployment/critter-frontend"
-                sh "kubectl rollout undo deployment/critter-backend"
-            }
+            // withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG')]) {
+            //     sh "kubectl rollout undo deployment/critter-frontend"
+            //     sh "kubectl rollout undo deployment/critter-backend"
+            // }
         }
         success {
             echo 'Pipeline completed successfully!'
