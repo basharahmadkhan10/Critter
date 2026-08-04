@@ -68,8 +68,8 @@ const Dashboard = () => {
 
             <div className="events-grid">
                 {events.length === 0 ? (
-                    <div style={styles.grid}>
-                        <p style={{ textAlign: 'center', width: '100%', gridColumn: '1 / -1', padding: '40px 0', color: '#666' }}>
+                    <div style={{ width: '100%', gridColumn: '1 / -1', display: 'flex', justifyContent: 'center' }}>
+                        <p style={{ textAlign: 'center', padding: '40px 0', color: '#666' }}>
                             No events available right now. Check back later!
                         </p>
                     </div>
