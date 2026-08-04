@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import axios from '../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 
 const Register = () => {
+    const { setAuth } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [otp, setOtp] = useState('');
@@ -54,10 +56,21 @@ const Register = () => {
                 { headers: { 'Content-Type': 'application/json' } }
             );
             
-            setMsg(response.data.message);
+            // Auto login after successful verification
+            const loginRes = await axios.post('/auth/login', 
+                JSON.stringify({ email, password }),
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }
+            );
+            const accessToken = loginRes?.data?.accessToken;
+            setAuth({ email, accessToken });
+            
+            setMsg('Verified successfully! Redirecting to Dashboard...');
             setTimeout(() => {
-                navigate('/login');
-            }, 2000);
+                navigate('/dashboard', { replace: true });
+            }, 1500);
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');

@@ -63,13 +63,15 @@ const Dashboard = () => {
             )}
             <div className="dashboard-header">
                 <h2>Awesome Upcoming Events</h2>
-                <p>Browse and discover amazing events near you.</p>
+                <p style={{ textAlign: 'center' }}>Browse and discover amazing events near you.</p>
             </div>
 
             <div className="events-grid">
                 {events.length === 0 ? (
-                    <div className="no-events">
-                        <p>No events available right now. Check back later!</p>
+                    <div style={styles.grid}>
+                        <p style={{ textAlign: 'center', width: '100%', gridColumn: '1 / -1', padding: '40px 0', color: '#666' }}>
+                            No events available right now. Check back later!
+                        </p>
                     </div>
                 ) : (
                     events.map((event) => {
