@@ -41,7 +41,7 @@ pipeline {
                 stage('Frontend Build & Scan') {
                     steps {
                         dir('client') {
-                            sh "docker build -t ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID} ."
+                            sh "DOCKER_BUILDKIT=0 docker build -t ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID} ."
                             sh "trivy image --cache-dir /tmp/trivy-frontend --severity HIGH,CRITICAL --no-progress ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}"
                         }
                     }
@@ -49,7 +49,7 @@ pipeline {
                 stage('Backend Build & Scan') {
                     steps {
                         dir('server') {
-                            sh "docker build -t ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID} ."
+                            sh "DOCKER_BUILDKIT=0 docker build -t ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID} ."
                             sh "trivy image --cache-dir /tmp/trivy-backend --severity HIGH,CRITICAL --no-progress ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}"
                         }
                     }
