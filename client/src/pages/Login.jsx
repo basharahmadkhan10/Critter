@@ -27,7 +27,8 @@ const Login = () => {
             );
             
             const accessToken = response?.data?.accessToken;
-            setAuth({ email, accessToken });
+            const role = response?.data?.role;
+            setAuth({ email, role, accessToken });
             setEmail('');
             setPassword('');
             navigate(from, { replace: true });

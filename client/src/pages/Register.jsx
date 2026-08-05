@@ -65,7 +65,8 @@ const Register = () => {
                 }
             );
             const accessToken = loginRes?.data?.accessToken;
-            setAuth({ email, accessToken });
+            const role = loginRes?.data?.role;
+            setAuth({ email, role, accessToken });
             
             setMsg('Verified successfully! Redirecting to Dashboard...');
             setTimeout(() => {
