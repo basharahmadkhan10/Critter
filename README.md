@@ -1,7 +1,7 @@
 # Capstone Project: Smart Event Management Portal (DevOps Deployment)
 
 **Project Scenario:**
-A complete DevOps CI/CD pipeline deploying a containerized MERN stack application onto Kubernetes using Jenkins, designed for ABC Solutions Pvt.
+A complete DevOps CI/CD pipeline deploying a containerized MERN stack application onto Kubernetes using Jenkins, designed for ABC Solutions Company
 
 ---
 
