@@ -21,8 +21,6 @@ pipeline {
                     steps {
                         dir('client') {
                             sh 'npm install'
-                            // Assuming you have tests set up:
-                            // sh 'npm run test'
                             echo "Skipping actual tests, but they would run here."
                         }
                     }
@@ -31,7 +29,6 @@ pipeline {
                     steps {
                         dir('server') {
                             sh 'npm install'
-                            // sh 'npm run test'
                             echo "Skipping actual tests, but they would run here."
                         }
                     }
