@@ -35,6 +35,22 @@ const createEvent = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
+};// @desc    Delete an event
+// @route   DELETE /api/events/:id
+// @access  Private/Admin
+const deleteEvent = async (req, res) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (event) {
+            await event.deleteOne();
+            res.json({ message: 'Event removed' });
+        } else {
+            res.status(404).json({ message: 'Event not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
-module.exports = { getEvents, createEvent };
+module.exports = { getEvents, createEvent, deleteEvent };

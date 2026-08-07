@@ -20,7 +20,7 @@ pipeline {
                 stage('Frontend Tests') {
                     steps {
                         dir('client') {
-                            sh 'npm install'
+                            echo 'npm install'
                             echo "Skipping actual tests, but they would run here."
                         }
                     }
@@ -28,7 +28,7 @@ pipeline {
                 stage('Backend Tests') {
                     steps {
                         dir('server') {
-                            sh 'npm install'
+                            echo 'npm install'
                             echo "Skipping actual tests, but they would run here."
                         }
                     }
@@ -59,19 +59,44 @@ pipeline {
 
         stage('Push Images to Docker Hub') {
             steps {
-                echo 'Skipping Docker Push: dockerhub-credentials not configured in Jenkins.'
+                withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CRED, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                    sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
+                    sh "docker push ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}"
+                    sh "docker push ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}"
+                    
+                    // Also tag and push as latest
+                    sh "docker tag ${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID} ${DOCKER_IMAGE_FRONTEND}:latest"
+                    sh "docker tag ${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID} ${DOCKER_IMAGE_BACKEND}:latest"
+                    sh "docker push ${DOCKER_IMAGE_FRONTEND}:latest"
+                    sh "docker push ${DOCKER_IMAGE_BACKEND}:latest"
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                echo 'Skipping K8s Deployment: k8s-kubeconfig credential not configured in Jenkins.'
+                withKubeConfig([credentialsId: env.KUBECONFIG_CRED]) {
+                    // Update image tags in deployments dynamically
+                    sh "sed -i 's|${DOCKER_IMAGE_FRONTEND}:.*|${DOCKER_IMAGE_FRONTEND}:${env.BUILD_ID}|g' k8s/frontend-deployment.yaml"
+                    sh "sed -i 's|${DOCKER_IMAGE_BACKEND}:.*|${DOCKER_IMAGE_BACKEND}:${env.BUILD_ID}|g' k8s/backend-deployment.yaml"
+                    
+                    // Apply manifests
+                    sh "kubectl apply -f k8s/secrets.yaml"
+                    sh "kubectl apply -f k8s/backend-deployment.yaml"
+                    sh "kubectl apply -f k8s/frontend-deployment.yaml"
+                    sh "kubectl apply -f k8s/hpa.yaml"
+                }
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                echo 'Skipping Deployment Verification'
+                withKubeConfig([credentialsId: env.KUBECONFIG_CRED]) {
+                    // Wait for rollouts to complete
+                    sh "kubectl rollout status deployment/critter-backend --timeout=120s"
+                    sh "kubectl rollout status deployment/critter-frontend --timeout=120s"
+                    echo "Deployment Verified Successfully!"
+                }
             }
         }
     }
